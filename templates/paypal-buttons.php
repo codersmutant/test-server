@@ -157,14 +157,7 @@ $formatted_amount = number_format((float)$amount, 2, '.', ',');
 </head>
 <body>
     <div class="container">
-        <!-- Amount display -->
-        <?php if (!empty($amount) && $amount > 0) : ?>
-        <div class="amount-container">
-            <span class="amount-label"><?php _e('Total:', 'woo-paypal-proxy-server'); ?></span>
-            <span class="amount"><?php echo esc_html($formatted_amount); ?></span>
-            <span class="currency"><?php echo esc_html($currency); ?></span>
-        </div>
-        <?php endif; ?>
+       
         
         <!-- PayPal buttons container -->
         <div id="paypal-buttons-container"></div>
@@ -791,6 +784,39 @@ function resizeIframe(height) {
     });
 }
 
+// More aggressive height adjustment
+function adjustHeight() {
+    // If card form is visible, use a larger height
+    if (hasCardFormElements()) {
+        // Add significantly more space for the card form
+        resizeIframe(document.body.scrollHeight + 250);
+    } else {
+        // Regular height for PayPal buttons
+        resizeIframe(document.body.scrollHeight + 50);
+    }
+}
+
+// Watch for DOM changes
+const observer = new MutationObserver(function(mutations) {
+    adjustHeight();
+});
+
+// Start observing with more complete coverage
+observer.observe(document.body, { 
+    childList: true,
+    subtree: true,
+    attributes: true,
+    characterData: true
+});
+
+// Also set up periodic checking as backup
+setInterval(adjustHeight, 1000);
+
+// Initial height adjustment
+setTimeout(adjustHeight, 500);
+
+/*
+
 // Watch for DOM changes and resize when payment form changes
 const observer = new MutationObserver(function(mutations) {
     // Check if PayPal card form is visible
@@ -806,6 +832,7 @@ observer.observe(document.body, {
     childList: true, 
     subtree: true 
 });
+*/
     </script>
 </body>
 </html>
