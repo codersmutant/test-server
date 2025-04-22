@@ -28,6 +28,8 @@ class WPPPS_Admin {
         add_action('wp_ajax_wppps_update_site', array($this, 'ajax_update_site'));
         add_action('wp_ajax_wppps_delete_site', array($this, 'ajax_delete_site'));
         add_action('wp_ajax_wppps_test_paypal', array($this, 'ajax_test_paypal'));
+        add_action('wp_ajax_wppps_get_site', array($this, 'ajax_get_site'));
+
     }
     
     /**

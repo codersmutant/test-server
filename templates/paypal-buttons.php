@@ -238,14 +238,14 @@ $formatted_amount = number_format((float)$amount, 2, '.', ',');
     paypal.Buttons({
         // Style the buttons
         style: {
-            layout: 'horizontal',  // horizontal | vertical
+            layout: 'vertical',  // horizontal | vertical
             color: 'gold',         // gold | blue | silver | black
             shape: 'rect',         // pill | rect
             label: 'paypal',       // pay | checkout | paypal | buynow
             tagline: false,
-            fundingSource: paypal.FUNDING.PAYPAL
+            //fundingSource: paypal.FUNDING.PAYPAL
         },
-        fundingSource: paypal.FUNDING.PAYPAL,
+        //fundingSource: paypal.FUNDING.PAYPAL,
         
         // Create order
         createOrder: function(data, actions) {
@@ -399,6 +399,8 @@ $formatted_amount = number_format((float)$amount, 2, '.', ',');
         }
     }).render('#paypal-buttons-container');
     
+    
+    /*
     // Add Credit Card option
     paypal.Buttons({
         style: {
@@ -560,6 +562,8 @@ $formatted_amount = number_format((float)$amount, 2, '.', ',');
             showError('PayPal error: ' + (err.message || 'An error occurred'));
         }
     }).render('#paypal-buttons-container');
+    
+    */
     
     // Listen for messages from parent window
     window.addEventListener('message', function(event) {
@@ -782,6 +786,46 @@ function resizeIframe(height) {
         action: 'resize_iframe',
         height: height
     });
+}
+
+/**
+ * Check if PayPal card form elements are present in the DOM
+ * @return {boolean} True if card form elements are found
+ */
+function hasCardFormElements() {
+    // Look for standard PayPal card form elements
+    const cardFormSelectors = [
+        // Standard PayPal card form containers
+        '#card-fields-container',
+        '#card-expiry',
+        '#card-cvc'
+    ];
+    
+    // Check if any of these elements exist
+    for (let i = 0; i < cardFormSelectors.length; i++) {
+        if (document.querySelector(cardFormSelectors[i])) {
+            //console.log('Card form element found:', cardFormSelectors[i]);
+            return true;
+        }
+    }
+    
+    // Also check if any iframe contains card form content
+    const iframes = document.querySelectorAll('iframe');
+    for (let i = 0; i < iframes.length; i++) {
+        try {
+            // Try to access iframe content - this may fail due to same-origin policy
+            const iframeDoc = iframes[i].contentDocument || iframes[i].contentWindow.document;
+            if (iframeDoc && iframeDoc.querySelector('.card-fields-container')) {
+                
+                return true;
+            }
+        } catch (e) {
+            // Ignore cross-origin errors
+        }
+    }
+    
+    // No card form elements found
+    return false;
 }
 
 // More aggressive height adjustment
