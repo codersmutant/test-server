@@ -267,46 +267,49 @@
     /**
      * Capture PayPal payment via REST API
      */
-    function capturePayPalPayment(paypalOrderId) {
-        return new Promise(function(resolve, reject) {
-            // Calculate timestamp for security
-            var timestamp = Math.floor(Date.now() / 1000);
+    /**
+ * Capture PayPal payment via REST API
+ */
+function capturePayPalPayment(paypalOrderId) {
+    return new Promise(function(resolve, reject) {
+        // Calculate timestamp for security
+        var timestamp = Math.floor(Date.now() / 1000);
+        
+        // Create request data
+        var data = {
+            api_key: orderData.apiKey,
+            paypal_order_id: paypalOrderId,
+            order_id: orderData.orderId,
+            timestamp: timestamp
+        };
+        
+        // Make the request
+        fetch('/wp-json/wppps/v1/capture-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(function(responseData) {
+            if (!responseData.success) {
+                throw new Error(responseData.message || 'Failed to capture payment');
+            }
             
-            // Create request data
-            var data = {
-                api_key: orderData.apiKey,
-                paypal_order_id: paypalOrderId,
-                order_id: orderData.orderId,
-                timestamp: timestamp
-            };
-            
-            // Make the request
-            fetch(ajaxRestUrl('/wppps/v1/capture-payment'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(function(responseData) {
-                if (!responseData.success) {
-                    throw new Error(responseData.message || 'Failed to capture payment');
-                }
-                
-                // Return the capture data
-                resolve(responseData);
-            })
-            .catch(function(error) {
-                reject(error);
-            });
+            // Return the capture data
+            resolve(responseData);
+        })
+        .catch(function(error) {
+            reject(error);
         });
-    }
+    });
+}
     
     /**
      * Send message to parent window

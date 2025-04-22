@@ -231,7 +231,7 @@ class WPPPS_PayPal_API {
                 'Content-Type' => 'application/json',
                 'Prefer' => 'return=representation',
             ),
-            'body' => json_encode(array()),
+            'body' => '{}',
             'timeout' => 30,
         );
         

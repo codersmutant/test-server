@@ -472,6 +472,8 @@ class WPPPS_REST_API {
         // Capture the payment
         $capture = $this->paypal_api->capture_payment($params['paypal_order_id']);
         
+
+        
         if (is_wp_error($capture)) {
             return new WP_Error(
                 'paypal_error',
